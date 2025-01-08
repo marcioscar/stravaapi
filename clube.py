@@ -19,7 +19,7 @@ load_dotenv()
 import paramiko
 from scp import SCPClient
 import pandas as pd
-from src.env_handler import env_variables
+
 
 
 # Configurações do servidor remoto
