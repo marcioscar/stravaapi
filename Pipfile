@@ -10,6 +10,8 @@ requests = "*"
 numpy = "*"
 streamlit = "*"
 nbconvert = "*"
+paramiko = "*"
+scp = "*"
 
 [dev-packages]
 ipykernel = "*"
