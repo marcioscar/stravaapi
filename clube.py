@@ -145,6 +145,7 @@ grouped.rename(columns={'tempo_total': 'Tempo Total'}, inplace=True)
 
 pontuacao_participantes = grouped
 
+st.image('logo.png', width=200)
 pontuacao_participantes
 
 
