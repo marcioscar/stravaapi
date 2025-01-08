@@ -10,6 +10,7 @@ st.set_page_config(layout="wide")
 from dotenv import load_dotenv
 import os
 
+
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
@@ -114,7 +115,7 @@ grouped = runs.groupby("athlete.fullname").agg(
 ).reset_index()
 
 # Definir o intervalo de datas
-start_date = datetime.strptime('2025-01-08', '%Y-%m-%d')
+start_date = datetime.strptime('2025-01-09', '%Y-%m-%d')
 end_date = datetime.strptime('2025-01-18', '%Y-%m-%d')
 
 # Gerar uma lista de datas no intervalo
@@ -152,7 +153,9 @@ grouped.rename(columns={'tempo_total': 'Tempo Total'}, inplace=True)
 
 pontuacao_participantes = grouped
 
-st.image('logo.png', width=200)
+st.logo('logo.svg', size='large')
+st.image('distance.svg', width=200)
+# st.subheader('_Play Distance_ - Desafio 10 dias')
 pontuacao_participantes
 
 

@@ -82,7 +82,7 @@ def main():
         'elapsed_time', 'total_elevation_gain', 'type', 'sport_type'
     ])
     # Filtrar registros após a data especificada
-    atividades_unicas_data = filtered_df[filtered_df['data_atual'] > '2025-01-07']
+    atividades_unicas_data = filtered_df[filtered_df['data_atual'] > '2025-01-08']
     
     # Salva o DataFrame filtrado em um novo CSV
     atividades_unicas_data.to_csv(csv_file_2, index=False)
