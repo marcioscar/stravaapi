@@ -59,8 +59,8 @@ process_csv()
 # In[35]:
 
 
-df_strava = pd.read_csv('unique_activities_old.csv')
-# df_strava = pd.read_csv('atividades_unicas.csv')
+# df_strava = pd.read_csv('unique_activities_old.csv')
+df_strava = pd.read_csv('atividades_unicas.csv')
 df_strava['athlete.fullname'] = df_strava['firstname'] + ' ' + df_strava['lastname']
 df_strava['moving_time_minutes'] = round(df_strava['moving_time']/60, 2)
 
