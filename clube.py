@@ -7,7 +7,11 @@
 import pandas as pd
 import streamlit as st
 st.set_page_config(layout="wide")
+from dotenv import load_dotenv
+import os
 
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 # In[30]:
 
@@ -15,12 +19,15 @@ st.set_page_config(layout="wide")
 import paramiko
 from scp import SCPClient
 import pandas as pd
+from src.env_handler import env_variables
+
 
 # Configurações do servidor remoto
 host = "145.223.30.123"
 port = 22  # Porta SSH padrão
 username = "root"
-password = "Marcio@aynrand7"
+password = os.getenv('SSH_PASS')  # Pegar a variável do .env
+# password = "Marcio@aynrand7"
 remote_path = "/root/play/stravaapi/atividades_unicas.csv"
 local_path = "atividades_unicas.csv"
 
