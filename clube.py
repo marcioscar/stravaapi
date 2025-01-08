@@ -154,7 +154,7 @@ grouped.rename(columns={'tempo_total': 'Tempo Total'}, inplace=True)
 pontuacao_participantes = grouped
 
 st.logo('logo.svg', size='large')
-st.image('distance.svg', width=200)
+st.image('logo1.png', width=200)
 # st.subheader('_Play Distance_ - Desafio 10 dias')
 pontuacao_participantes
 
