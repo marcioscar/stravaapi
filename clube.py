@@ -29,7 +29,7 @@ port = 22  # Porta SSH padrão
 username = "root"
 password = os.getenv('SSH_PASS')  # Pegar a variável do .env
 # password = "Marcio@aynrand7"
-remote_path = "/root/play/stravaapi/atividades_unicas.csv"
+remote_path = "/root/atividades_unicas.csv"
 local_path = "atividades_unicas.csv"
 
 def download_csv_via_scp():
@@ -67,10 +67,12 @@ process_csv()
 # In[35]:
 
 
-# df_strava = pd.read_csv('unique_activities_old.csv')
+#df_strava = pd.read_csv('atividades_unicas_certo.csv')
 df_strava = pd.read_csv('atividades_unicas.csv')
 df_strava['athlete.fullname'] = df_strava['firstname'] + ' ' + df_strava['lastname']
 df_strava['moving_time_minutes'] = round(df_strava['moving_time']/60, 2)
+
+
 
 
 # In[94]:
@@ -103,16 +105,25 @@ def kmh_to_min_km(speed_kmh):
 df_strava['avg_speed_kmh'] = pd.to_numeric(df_strava['avg_speed_kmh'], errors='coerce')
 df_strava['pace_real'] = df_strava['avg_speed_kmh'].apply(kmh_to_min_km)
 
+
+
 corridas = df_strava[cols]
 runs = corridas.loc[corridas['type'] == 'Run' ]
 
 # Agrupar por atleta e agregar as datas em uma lista
 grouped = runs.groupby("athlete.fullname").agg(
     total_quilometros=("distance", lambda x: round(x.sum() / 1000, 2)),
-    
     tempo_total=("moving_time_minutes", "sum"),
     datas=("data_atual", lambda x: list(x))
 ).reset_index()
+
+# Alterar 'total_quilometros' com base em uma condição
+grouped['total_quilometros'] = grouped.apply(
+    lambda row: 8 if row['total_quilometros'] > 8 and '2025-01-09' in row['datas'] else row['total_quilometros'],
+    axis=1
+)
+
+
 
 # Definir o intervalo de datas
 start_date = datetime.strptime('2025-01-09', '%Y-%m-%d')
@@ -149,6 +160,10 @@ grouped.rename(columns={'total_quilometros': 'Distância'}, inplace=True)
 grouped.rename(columns={'athlete.fullname': 'Atleta'}, inplace=True)
 grouped.rename(columns={'tempo_total': 'Tempo Total'}, inplace=True)
 
+# Limitar os valores da coluna a no máximo 8
+# grouped['Distância'] = grouped['Distância'].apply(lambda x: 8 if x > 8 else x)
+
+# Limitar valores a 8 somente se a categoria for 'A'
 
 
 pontuacao_participantes = grouped
