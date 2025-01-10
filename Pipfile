@@ -12,6 +12,8 @@ streamlit = "*"
 nbconvert = "*"
 paramiko = "*"
 scp = "*"
+plotly = "*"
+streamlit-aggrid = "*"
 
 [dev-packages]
 ipykernel = "*"

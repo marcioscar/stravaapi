@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from pathlib import Path
 import pandas as pd
@@ -20,7 +20,10 @@ def main():
     cur_df = data_prep.preprocess_data(data)
 
 # Adiciona a data atual como uma nova coluna no DataFrame
-    current_date = datetime.now().strftime('%Y-%m-%d')  # Formata a data como AAAA-MM-DD
+
+    data_hora_atual = datetime.now()
+    data_hora_ajustada = data_hora_atual - timedelta(hours=3, minutes=10)
+    current_date = data_hora_ajustada.strftime('%Y-%m-%d')  # Formata a data como AAAA-MM-DD
     cur_df['data_atual'] = current_date  # Adiciona a data ao DataFrame
 
     dfs_to_concat.append(cur_df)
@@ -74,13 +77,14 @@ def main():
                 sport_type,
                 data_atual
             ])
-    csv_file_2 = 'atividades_unicas.csv'
+    csv_file_2 = 'atividades_unicas_teste.csv'
     df = pd.read_csv(csv_file_1)
      # Remove registros duplicados considerando os campos especificados
     filtered_df = df.drop_duplicates(subset=[
         'firstname', 'lastname', 'name', 'distance', 'moving_time',
         'elapsed_time', 'total_elevation_gain', 'type', 'sport_type'
     ])
+    filtered_df = filtered_df.drop_duplicates(subset=['distance', 'data_atual'])
     # Filtrar registros após a data especificada
     atividades_unicas_data = filtered_df[filtered_df['data_atual'] > '2025-01-08']
     

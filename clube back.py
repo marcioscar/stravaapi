@@ -6,9 +6,6 @@ import os
 import paramiko
 from scp import SCPClient
 from datetime import datetime, timedelta
-import plotly.express as px
-
-
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -20,7 +17,6 @@ username = "root"
 password = os.getenv('SSH_PASS')  # Pegar a variável do .env
 remote_path = "/root/atividades_unicas.csv"
 local_path = "atividades_unicas.csv"
-
 
 def download_csv_via_scp():
     # Cria o cliente SSH
@@ -44,18 +40,8 @@ def download_csv_via_scp():
 def process_csv():
     try:
         # Lê o arquivo CSV local
-        df = pd.read_csv(local_path, dtype={
-            'firstname': 'object',
-            'lastname': 'object',
-            'name': 'object',
-            'distance': 'float64',
-            'moving_time': 'float64',
-            'elapsed_time': 'float64',
-            'total_elevation_gain': 'float64',
-            'type': 'object',
-            'sport_type': 'object',
-            'data_atual': 'object'
-        })
+        df = pd.read_csv(local_path)
+        # Exibe as primeiras linhas do DataFrame
         return df
     except Exception as e:
         print(f"Erro ao processar o arquivo CSV: {e}")
@@ -72,32 +58,24 @@ else:
     df_strava['athlete.fullname'] = df_strava['firstname'] + ' ' + df_strava['lastname']
     df_strava['moving_time_minutes'] = round(df_strava['moving_time'] / 60, 2)
     df_strava['distance_km'] = round(df_strava['distance'] / 1000, 2)
-    
+
     # Filtrar os dados pelo data_atual
     filtered_df = df_strava[df_strava['data_atual'] == '2025-01-09']
-    
-    # Função para ajustar os valores de distance_km
+
+    # Função para ajustar os valores de distance
     def adjust_distances(group):
         total_distance = group['distance_km'].sum()
         if total_distance > 8:
-            group['distance_km'] = 8
+            group['distance_km'] = group['distance_km'] * (8 / total_distance)
         return group
 
-    # Aplicar a função de ajuste ao DataFrame agrupado por athlete.fullname
+    # Aplicar a função de ajuste ao DataFrame agrupado por firstname
     adjusted_df = filtered_df.groupby('athlete.fullname').apply(adjust_distances).reset_index(drop=True)
 
-    # Atualizar o DataFrame original com os novos valores de distance_km
+    # Atualizar o DataFrame original com os novos valores de distance
     for index, row in adjusted_df.iterrows():
-        athlete_mask = (df_strava['data_atual'] == '2025-01-09') & (df_strava['athlete.fullname'] == row['athlete.fullname'])
-        df_strava.loc[athlete_mask, 'distance_km'] = row['distance_km']
-
-    # Recalcular a soma de distance_km para garantir que não ultrapasse 8 km no total
-    for athlete in df_strava['athlete.fullname'].unique():
-        athlete_mask = (df_strava['data_atual'] == '2025-01-09') & (df_strava['athlete.fullname'] == athlete)
-        athlete_total_distance = df_strava.loc[athlete_mask, 'distance_km'].sum()
-        
-        if athlete_total_distance > 8:
-            df_strava.loc[athlete_mask, 'distance_km'] *= 8 / athlete_total_distance
+        df_strava.loc[(df_strava['data_atual'] == '2025-01-09') & 
+                      (df_strava['athlete.fullname'] == row['athlete.fullname']), 'distance_km'] = row['distance_km']
 
     # Função para converter velocidade em pace
     def kmh_to_min_km(speed_kmh):
@@ -109,17 +87,28 @@ else:
         else:
             return None  # Retorna None para velocidades inválidas
 
-    df_strava['avg_speed_kmh'] = df_strava['distance_km'] / (df_strava['moving_time_minutes'] / 60)
     df_strava['avg_speed_kmh'] = pd.to_numeric(df_strava['avg_speed_kmh'], errors='coerce')
     df_strava['pace_real'] = df_strava['avg_speed_kmh'].apply(kmh_to_min_km)
-    
+
+    # Filtrar o DataFrame para a data específica
+    data_especifica = '2025-01-09'
+    df_filtrado = df_strava[df_strava['data_atual'] == data_especifica]
+
+    # Calcular a soma de distance_km para a data específica
+    soma_distance_km = df_filtrado['distance_km'].sum()
+
+    # Se a soma ultrapassar 8 km, ajustar os valores de distance_km proporcionalmente
+    if soma_distance_km > 8:
+        fator_ajuste = 8 / soma_distance_km
+        df_strava.loc[df_strava['data_atual'] == data_especifica, 'distance_km'] *= fator_ajuste
+
     cols = ['athlete.fullname', 'name', 'type', 'distance', 'data_atual', 'distance_km', 'pace_real', 'moving_time_minutes', 'total_elevation_gain']
     corridas = df_strava[cols]
     runs = corridas.loc[corridas['type'] == 'Run']
 
     # Agrupar por atleta e agregar as datas em uma lista
     grouped = runs.groupby("athlete.fullname").agg(
-        total_quilometros=("distance_km", "sum"),
+        total_quilometros=("distance", lambda x: round(x.sum() / 1000, 2)),
         tempo_total=("moving_time_minutes", "sum"),
         datas=("data_atual", lambda x: list(x))
     ).reset_index()
@@ -160,32 +149,4 @@ else:
     st.logo('logo.svg', size='large')
     st.image('logo1.png', width=200)
     st.write("_Play Distance_ - Desafio 10 dias")
-    
-    grouped
-    grouped = grouped.sort_values(by="Distância", ascending=False)
-    
-# Gerar o gráfico horizontal
-fig = px.bar(
-    grouped,
-    x="Distância",          # Valores do eixo X (horizontal)
-    y="Atleta",             # Valores do eixo Y (vertical)
-    orientation="h",        # Define a orientação horizontal
-    title="Distância por Atleta",
-    labels={"Distância": "Distância (km)", "Atleta": "Atletas"},    # Mostrar os valores no gráfico
-    color="Atleta",         # Diferenciar as barras por cor com base nos atletas
-    color_discrete_sequence=px.colors.qualitative.Set2,  # Escolher uma paleta de cores
-)
-
-# Ajustar o layout para aumentar a altura
-fig.update_layout(
-    height=1000,             # Define a altura do gráfico
-    yaxis=dict(
-        title="Atletas",
-        categoryorder="total ascending",  # Inverter a ordem do eixo Y
-    ),
-    xaxis=dict(title="Distância (km)"),
-    showlegend=False,
-    margin=dict(l=100, r=50, t=50, b=50),  # Ajustar margens
-)
-
-st.plotly_chart(fig, use_container_width=True)
+    st.dataframe(grouped)
