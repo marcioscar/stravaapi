@@ -32,6 +32,9 @@ st.divider()
 st.subheader("Classificação Homens")
 st.dataframe(masculinos, use_container_width=True)
 
+config = {
+    'displayModeBar': False  # Remove a barra de ferramentas
+}
 fem = px.bar(
     feminino,
     x="KM",          # Valores do eixo X (horizontal)
@@ -45,6 +48,7 @@ fem = px.bar(
 
 # Ajustar o layout para aumentar a altura
 fem.update_layout(
+
     height=1000, # Define a altura do gráfico
     yaxis=dict(
         title="Nome",
@@ -52,10 +56,11 @@ fem.update_layout(
     ),
     xaxis=dict(title="Distância (km)"),
     showlegend=False,
-    margin=dict(l=0, r=0, t=0, b=0),  # Remove todas as margens
+    margin=dict(l=0, r=0, t=0, b=0), 
+      
 )
 st.subheader("Gáfico Mulheres")
-fem
+st.plotly_chart(fem, use_container_width=True, config=config)
 
 masc = px.bar(
     masculinos,
@@ -80,6 +85,6 @@ masc.update_layout(
     margin=dict(l=0, r=0, t=0, b=0),  # Remove todas as margens
 )
 st.subheader("Gáfico Homens")
-masc
+st.plotly_chart(masc, use_container_width=True, config=config)
 
 
