@@ -121,7 +121,8 @@ else:
     grouped = runs.groupby("athlete.fullname").agg(
         total_quilometros=("distance_km", "sum"),
         tempo_total=("moving_time_minutes", "sum"),
-        datas=("data_atual", lambda x: list(x))
+        datas=("data_atual", lambda x: list(x)),
+        
     ).reset_index()
 
     # Definir o intervalo de datas
@@ -136,12 +137,17 @@ else:
         grouped[date] = grouped['datas'].apply(
             lambda x: '🏃🏻‍♂️' if date in [datetime.strptime(d, '%Y-%m-%d').strftime('%d-%m-%y') for d in x] else ''
         )
+    
 
     # Verificar se o tempo_total de cada dia é maior que 30 minutos e adicionar 'tempo ok'
     for date in date_range:
         grouped[date] = grouped.apply(
             lambda row: f"{row[date]} ⏱️" if row[date] == '🏃🏻‍♂️' and row['tempo_total'] > 30 else row[date], axis=1
         )
+
+    
+
+
 
     # Remover a coluna 'datas'
     grouped = grouped.drop(columns=['datas'])
@@ -178,14 +184,14 @@ fig = px.bar(
 
 # Ajustar o layout para aumentar a altura
 fig.update_layout(
-    height=1000,             # Define a altura do gráfico
+    height=1000, # Define a altura do gráfico
     yaxis=dict(
         title="Atletas",
         categoryorder="total ascending",  # Inverter a ordem do eixo Y
     ),
     xaxis=dict(title="Distância (km)"),
     showlegend=False,
-    margin=dict(l=100, r=50, t=50, b=50),  # Ajustar margens
+    margin=dict(l=0, r=0, t=0, b=0),  # Remove todas as margens
 )
 
 st.plotly_chart(fig, use_container_width=True)
