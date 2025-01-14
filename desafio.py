@@ -9,6 +9,10 @@ st.set_page_config(layout="wide")
 feminino = df[df['Sexo'] == 'F'].sort_values(by='KM', ascending=False)
 masculinos = df[df['Sexo'] == 'M'].sort_values(by='KM', ascending=False)
 
+max_km = feminino["KM"].max()
+# feminino["Diferença_KM"] = max_km - df["KM"]
+
+
 
 feminino.reset_index(drop=True, inplace=True)
 feminino.index += 1
@@ -24,6 +28,8 @@ st.logo('logo.svg', size='large')
 st.image('logo1.png', width=200)
 st.write("_Play Distance_ - Desafio 10 dias")
 feminino = feminino[['Nome', 'KM']]
+# feminino = feminino[['Nome', 'KM', 'Diferença_KM']]
+
 masculinos = masculinos[['Nome', 'KM']]
 st.subheader("Classificação Mulheres")
 st.dataframe(feminino, use_container_width=True)
@@ -59,6 +65,8 @@ fem.update_layout(
     margin=dict(l=0, r=0, t=0, b=0), 
       
 )
+
+
 st.subheader("Gáfico Mulheres")
 st.plotly_chart(fem, use_container_width=True, config=config)
 
