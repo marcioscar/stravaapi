@@ -38,6 +38,19 @@ st.divider()
 st.subheader("Classificação Homens")
 st.dataframe(masculinos, use_container_width=True)
 
+# st.data_editor(
+#     masculinos,
+#     column_config={
+#         'KM':st.column_config.ProgressColumn(
+#             'KM_progress',
+#             format="$%f",
+#             min_value=0,
+#             max_value=100,
+#         )
+#     })
+
+
+
 config = {
     'displayModeBar': False  # Remove a barra de ferramentas
 }
