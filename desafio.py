@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 
 df = pd.read_csv('play.csv', sep=';', decimal=',')
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Play Distance", page_icon="🏃‍♂️")
 
 
 feminino = df[df['Sexo'] == 'F'].sort_values(by='KM', ascending=False)
