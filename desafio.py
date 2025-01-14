@@ -10,7 +10,7 @@ feminino = df[df['Sexo'] == 'F'].sort_values(by='KM', ascending=False)
 masculinos = df[df['Sexo'] == 'M'].sort_values(by='KM', ascending=False)
 
 max_km = feminino["KM"].max()
-# feminino["Diferença_KM"] = max_km - df["KM"]
+feminino["Diferenca_KM"] = max_km - df["KM"]
 
 
 
@@ -38,16 +38,6 @@ st.divider()
 st.subheader("Classificação Homens")
 st.dataframe(masculinos, use_container_width=True)
 
-# st.data_editor(
-#     masculinos,
-#     column_config={
-#         'KM':st.column_config.ProgressColumn(
-#             'KM_progress',
-#             format="$%f",
-#             min_value=0,
-#             max_value=100,
-#         )
-#     })
 
 
 
@@ -80,7 +70,7 @@ fem.update_layout(
 )
 
 
-st.subheader("Gáfico Mulheres")
+st.subheader("Gráfico Mulheres")
 st.plotly_chart(fem, use_container_width=True, config=config)
 
 masc = px.bar(
@@ -105,7 +95,7 @@ masc.update_layout(
     showlegend=False,
     margin=dict(l=0, r=0, t=0, b=0),  # Remove todas as margens
 )
-st.subheader("Gáfico Homens")
+st.subheader("Gráfico Homens")
 st.plotly_chart(masc, use_container_width=True, config=config)
 
 
