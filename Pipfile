@@ -5,15 +5,15 @@ name = "pypi"
 
 [packages]
 environs = "==9.5.0"
-pandas = "*"
 requests = "*"
 numpy = "*"
-streamlit = "*"
 nbconvert = "*"
 paramiko = "*"
 scp = "*"
-plotly = "*"
 streamlit-aggrid = "*"
+pandas = "*"
+streamlit = "*"
+plotly = "*"
 
 [dev-packages]
 ipykernel = "*"
